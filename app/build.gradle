@@ -23,7 +23,12 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api('com.github.nkzawa:socket.io-client:0.5.0') {
+//    api('com.github.nkzawa:socket.io-client:0.5.0') {
+//        exclude group: 'org.json', module: 'json'
+//    }
+
+    api ('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
 

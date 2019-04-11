@@ -1,16 +1,11 @@
 package com.example.aymen.androidchat;
 
 
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class ChatBoxActivity extends AppCompatActivity {
     public RecyclerView myRecylerView ;
@@ -39,13 +37,13 @@ public class ChatBoxActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
 
-        messagetxt = (EditText) findViewById(R.id.message) ;
-        send = (Button)findViewById(R.id.send);
+        messagetxt = findViewById(R.id.message);
+        send = findViewById(R.id.send);
         // get the nickame of the user
-        Nickname= (String)getIntent().getExtras().getString(MainActivity.NICKNAME);
+        Nickname = getIntent().getExtras().getString(MainActivity.NICKNAME);
         //connect you socket client to the server
         try {
-            socket = IO.socket("http://192.168.1.3:3000");
+            socket = IO.socket("https://pb-sockets.herokuapp.com/");
             socket.connect();
             socket.emit("join", Nickname);
         } catch (URISyntaxException e) {
@@ -54,7 +52,7 @@ public class ChatBoxActivity extends AppCompatActivity {
         }
        //setting up recyler
         MessageList = new ArrayList<>();
-        myRecylerView = (RecyclerView) findViewById(R.id.messagelist);
+        myRecylerView = findViewById(R.id.messagelist);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         myRecylerView.setLayoutManager(mLayoutManager);
         myRecylerView.setItemAnimator(new DefaultItemAnimator());
@@ -68,10 +66,8 @@ public class ChatBoxActivity extends AppCompatActivity {
                 //retrieve the nickname and the message content and fire the event messagedetection
                 if(!messagetxt.getText().toString().isEmpty()){
                     socket.emit("messagedetection",Nickname,messagetxt.getText().toString());
-
                     messagetxt.setText(" ");
                 }
-
 
             }
         });
@@ -98,9 +94,7 @@ public class ChatBoxActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         String data = (String) args[0];
-
                         Toast.makeText(ChatBoxActivity.this,data,Toast.LENGTH_SHORT).show();
-
                     }
                 });
             }
@@ -121,8 +115,6 @@ public class ChatBoxActivity extends AppCompatActivity {
                             // make instance of message
 
                             Message m = new Message(nickname,message);
-
-
                             //add the message to the messageList
 
                             MessageList.add(m);
